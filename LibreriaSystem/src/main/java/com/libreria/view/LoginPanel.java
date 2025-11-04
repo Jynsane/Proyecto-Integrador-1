@@ -18,7 +18,7 @@ public class LoginPanel extends JPanel {
     private JButton btnLogin;
     private JLabel lblError;
     private JFrame parentFrame;
-    private JToggleButton btnShowPassword; // Se mantiene la variable
+    private JToggleButton btnShowPassword; 
     
     public LoginPanel(JFrame parent) {
         this.parentFrame = parent;
@@ -28,7 +28,7 @@ public class LoginPanel extends JPanel {
     
     private void initComponents() {
         setLayout(new GridBagLayout());
-        setBackground(UIConstants.SIDEBAR_COLOR); // Verde personalizado
+        setBackground(UIConstants.SIDEBAR_COLOR); 
         
         // Panel central con el formulario
         JPanel loginCard = new JPanel();
@@ -57,10 +57,8 @@ public class LoginPanel extends JPanel {
         lblError.setFont(UIConstants.SMALL_FONT);
         lblError.setForeground(UIConstants.DANGER_COLOR);
         lblError.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        // ------------------------------------------------------------------
-        // Panel para usuario CENTRADO (Nuevo contenedor para centrar)
-        // ------------------------------------------------------------------
+      
+        // Panel para usuario 
         JPanel usernameContainer = new JPanel();
         usernameContainer.setLayout(new BoxLayout(usernameContainer, BoxLayout.Y_AXIS));
         usernameContainer.setBackground(Color.WHITE);
@@ -86,25 +84,23 @@ public class LoginPanel extends JPanel {
         usernameContainer.add(Box.createVerticalStrut(5));
         usernameContainer.add(txtUsername);
 
-        // ------------------------------------------------------------------
-        // Panel para contraseña CENTRADO con OJITO (Nuevo contenedor para centrar)
-        // ------------------------------------------------------------------
+       
         JPanel passwordContainer = new JPanel();
         passwordContainer.setLayout(new BoxLayout(passwordContainer, BoxLayout.Y_AXIS));
         passwordContainer.setBackground(Color.WHITE);
         passwordContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        passwordContainer.setMaximumSize(new Dimension(360, 80)); // Ancho de 360px para centrar
+        passwordContainer.setMaximumSize(new Dimension(360, 80)); 
 
         JLabel lblPassword = new JLabel("Contraseña");
         lblPassword.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
         lblPassword.setForeground(UIConstants.TEXT_COLOR);
-        lblPassword.setAlignmentX(Component.LEFT_ALIGNMENT); // Alineado a la izquierda dentro del contenedor
+        lblPassword.setAlignmentX(Component.LEFT_ALIGNMENT); 
         
         // Panel que contiene el campo de texto y el botón "ojo"
         JPanel passwordPanel = new JPanel(new BorderLayout(5, 0));
         passwordPanel.setBackground(Color.WHITE);
-        passwordPanel.setMaximumSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); // Ancho fijo
-        passwordPanel.setPreferredSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); // Ancho fijo
+        passwordPanel.setMaximumSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); 
+        passwordPanel.setPreferredSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); 
         passwordPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         txtPassword = new JPasswordField();
@@ -127,10 +123,10 @@ public class LoginPanel extends JPanel {
         btnShowPassword.addActionListener(e -> {
             if (btnShowPassword.isSelected()) {
                 txtPassword.setEchoChar((char) 0); // Mostrar
-                btnShowPassword.setText("🙈"); // Icono de 'ojos cubiertos'
+                btnShowPassword.setText("🙈"); 
             } else {
                 txtPassword.setEchoChar('•'); // Ocultar
-                btnShowPassword.setText("👁"); // Icono de 'ojo abierto'
+                btnShowPassword.setText("👁"); 
             }
         });
         
@@ -141,13 +137,11 @@ public class LoginPanel extends JPanel {
         passwordContainer.add(Box.createVerticalStrut(5));
         passwordContainer.add(passwordPanel);
         
-        // ------------------------------------------------------------------
-        
-        // Botón de login - Se mantiene alineado al centro y su ancho de 360px
+        // Botón de login 
         btnLogin = createStyledButton("Iniciar Sesión", UIConstants.SIDEBAR_COLOR);
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        // Panel de información - Se ajusta el ancho a 360px para centrar
+        // Panel de información 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(UIConstants.HOVER_COLOR);
@@ -201,7 +195,7 @@ public class LoginPanel extends JPanel {
         loginCard.add(Box.createVerticalStrut(25));
         loginCard.add(lblError);
         loginCard.add(Box.createVerticalStrut(10));
-        loginCard.add(usernameContainer); // Contenedor centrado
+        loginCard.add(usernameContainer); 
         loginCard.add(Box.createVerticalStrut(15));
         loginCard.add(passwordContainer); // Contenedor centrado con ojito
         loginCard.add(Box.createVerticalStrut(25));
@@ -215,7 +209,6 @@ public class LoginPanel extends JPanel {
         btnLogin.addActionListener(e -> login());
         txtPassword.addActionListener(e -> login());
         
-        // Focus inicial
         SwingUtilities.invokeLater(() -> txtUsername.requestFocus());
     }
     
@@ -227,8 +220,8 @@ public class LoginPanel extends JPanel {
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(360, 45)); // Mantiene el ancho de 360px
-        button.setMaximumSize(new Dimension(360, 45)); // Se asegura de que el máximo sea 360px para centrar
+        button.setPreferredSize(new Dimension(360, 45)); 
+        button.setMaximumSize(new Dimension(360, 45)); 
         
         // Efecto hover
         button.addMouseListener(new MouseAdapter() {
@@ -262,9 +255,7 @@ public class LoginPanel extends JPanel {
             // Cerrar ventana de login y abrir MainFrame
             SwingUtilities.invokeLater(() -> {
                 parentFrame.dispose();
-                // Asegúrate de que MainFrame esté disponible en este paquete o importado
-                // Si la clase MainFrame no está disponible, este código no compilará
-                // Por simplicidad, se asume que existe
+              
                 MainFrame mainFrame = new MainFrame(); 
                 mainFrame.setVisible(true);
             });
