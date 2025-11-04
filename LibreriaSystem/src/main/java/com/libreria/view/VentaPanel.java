@@ -54,7 +54,7 @@ public class VentaPanel extends BasePanel {
         titleLabel.setForeground(UIConstants.TEXT_COLOR);
         headerPanel.add(titleLabel);
 
-        // Panel superior - Selección de productos CON BUSCADOR
+        // Panel superior 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -70,7 +70,7 @@ public class VentaPanel extends BasePanel {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Buscador de productos CON ICONO
+    
         JLabel lblBuscar = new JLabel("🔍 Buscar:");
         lblBuscar.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
         lblBuscar.setForeground(Color.BLACK);
@@ -94,7 +94,7 @@ public class VentaPanel extends BasePanel {
         gbc.gridwidth = 5;
         selectionPanel.add(txtBuscarProducto, gbc);
 
-        // Selector de producto
+   
         JLabel lblProducto = new JLabel("Producto:");
         lblProducto.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
         cmbProductos = new JComboBox<>();
@@ -141,7 +141,7 @@ public class VentaPanel extends BasePanel {
             }
         });
 
-        // Tabla de detalles con mejor visualización - TEXTO NEGRO
+        // Tabla de detalles con mejor visualización 
         modeloDetalle = new DefaultTableModel(
             new Object[]{"Producto", "Cantidad", "Precio Unit.", "Subtotal", ""}, 
             0
@@ -199,7 +199,7 @@ public class VentaPanel extends BasePanel {
         scrollPane.setBackground(Color.WHITE);
         scrollPane.getViewport().setBackground(Color.WHITE);
 
-        // Panel central - Detalles
+        // Panel central 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(UIConstants.BACKGROUND_COLOR);
         centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
