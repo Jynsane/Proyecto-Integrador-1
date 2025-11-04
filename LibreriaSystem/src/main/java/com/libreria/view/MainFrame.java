@@ -185,7 +185,7 @@ public class MainFrame extends JFrame {
         button.setFocusPainted(false);
         
         button.setMaximumSize(new Dimension(UIConstants.SIDEBAR_WIDTH - 20, 45));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT); 
+        button.setAlignmentX(Component.CENTER_ALIGNMENT); // Clave para centrar
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
