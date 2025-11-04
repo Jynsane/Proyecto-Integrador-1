@@ -60,7 +60,7 @@ public class UsuarioPanel extends BasePanel {
         txtNombre = createStyledTextField(40);
         cmbRol = new JComboBox<>(new String[]{"ADMINISTRADOR", "VENDEDOR"});
         styleComboBox(cmbRol);
-        cmbRol.setPreferredSize(new Dimension(410, UIConstants.INPUT_HEIGHT));
+        cmbRol.setPreferredSize(new Dimension(460, UIConstants.INPUT_HEIGHT));
         chkActivo = new JCheckBox("Usuario Activo");
         chkActivo.setSelected(true);
         chkActivo.setFont(UIConstants.NORMAL_FONT);
