@@ -337,10 +337,38 @@ public class SalesListPanel extends JDialog {
     }
 
     private void exportarExcel() {
-        JOptionPane.showMessageDialog(this,
-            "Función de exportación a Excel en desarrollo",
-            "Información",
-            JOptionPane.INFORMATION_MESSAGE);
+        try {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar Reporte de Ventas");
+            fileChooser.setSelectedFile(new java.io.File("Reporte_Ventas_" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx"));
+            
+            int userSelection = fileChooser.showSaveDialog(this);
+            
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                String rutaArchivo = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!rutaArchivo.endsWith(".xlsx")) {
+                    rutaArchivo += ".xlsx";
+                }
+                
+                // Obtener fechas
+                LocalDateTime inicio = LocalDateTime.parse(txtFechaInicio.getText() + "T00:00:00");
+                LocalDateTime fin = LocalDateTime.parse(txtFechaFin.getText() + "T23:59:59");
+                
+                ventaController.generarReporteVentasExcel(rutaArchivo, inicio, fin);
+                
+                JOptionPane.showMessageDialog(this,
+                    "Reporte exportado exitosamente a:\n" + rutaArchivo,
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error al exportar: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     private void verDetalle() {
