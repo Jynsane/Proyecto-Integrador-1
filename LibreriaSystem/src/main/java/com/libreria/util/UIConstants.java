@@ -3,7 +3,7 @@ package com.libreria.util;
 import java.awt.*;
 
 public class UIConstants {
-    // Paleta de colores moderna
+    // Paleta de colores 
     public static final Color PRIMARY_COLOR = new Color(37, 99, 235); // Azul moderno
     public static final Color PRIMARY_DARK = new Color(29, 78, 216);
     public static final Color PRIMARY_LIGHT = new Color(96, 165, 250);
@@ -17,7 +17,7 @@ public class UIConstants {
     
     public static final Color BACKGROUND_COLOR = new Color(249, 250, 251); // Gris muy claro
     public static final Color CARD_BACKGROUND = Color.WHITE;
-    public static final Color SIDEBAR_COLOR = new Color(99, 124, 111); // Verde personalizado #637c6f
+    public static final Color SIDEBAR_COLOR = new Color(99, 124, 111); // Verde  #637c6f
     public static final Color SIDEBAR_LIGHT = new Color(202, 222, 203); // Verde claro para hover
     
     public static final Color TEXT_COLOR = new Color(17, 24, 39);
