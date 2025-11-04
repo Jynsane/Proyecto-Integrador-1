@@ -147,12 +147,12 @@ public class MainFrame extends JFrame {
             navPanel.add(Box.createVerticalStrut(5));
         }
 
-        // Botón de cerrar sesión (Estilizado y centrado)
+        // Botón de cerrar sesión 
         JButton btnLogout = createSidebarButton("🚪 Cerrar Sesión", null, false);
         btnLogout.setBackground(UIConstants.DANGER_COLOR);
-        // Se asegura el ancho para que quede centrado
+        
         btnLogout.setMaximumSize(new Dimension(UIConstants.SIDEBAR_WIDTH - 20, 40)); 
-        // Sobreescribir el estilo del botón
+        
         btnLogout.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
