@@ -4,14 +4,12 @@ import com.libreria.model.Venta;
 import com.libreria.model.DetalleVenta;
 import com.libreria.dao.VentaDAO;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class VentaController extends BaseController<Venta> {
     private final ProductoController productoController;
     private final VentaDAO ventaDAO;
-    private static int numeroVentaSecuencial = 1;
-    
+  
     public VentaController() {
         this.productoController = new ProductoController();
         this.ventaDAO = new VentaDAO();
@@ -35,14 +33,7 @@ public class VentaController extends BaseController<Venta> {
         }
     }
     
-    private String generarNumeroVenta() {
-        // Este método queda obsoleto; la generación ahora se hace en VentaDAO
-        // Este método queda obsoleto; la generación ahora se hace en VentaDAO
-        LocalDateTime ahora = LocalDateTime.now();
-        String fecha = ahora.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String numero = String.format("%04d", numeroVentaSecuencial++);
-        return "V" + fecha + "-" + numero;
-    }
+    
     
     @Override
     public void actualizar(Venta venta) throws Exception {

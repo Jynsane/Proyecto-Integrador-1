@@ -2,12 +2,15 @@ package com.libreria.view;
 
 import com.libreria.controller.ReporteController;
 import com.libreria.model.Producto;
+import com.libreria.util.UIConstants;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,39 +30,47 @@ public class DashboardPanel extends BasePanel {
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(10, 10));
+        setBackground(UIConstants.BACKGROUND_COLOR);
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel superior con indicadores
-        JPanel topPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        // Panel superior con título
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
         
-        // Panel de ventas del día
-        JPanel ventasPanel = createIndicatorPanel("Ventas del Día");
-        lblVentasDia = new JLabel("S/. 0.00");
-        lblVentasDia.setFont(new Font("Arial", Font.BOLD, 24));
-        ventasPanel.add(lblVentasDia);
-        
-        // Panel de total de productos
-        JPanel productosPanel = createIndicatorPanel("Total Productos en Stock");
-        lblTotalProductos = new JLabel("0");
-        lblTotalProductos.setFont(new Font("Arial", Font.BOLD, 24));
-        productosPanel.add(lblTotalProductos);
-        
-        topPanel.add(ventasPanel);
-        topPanel.add(productosPanel);
+        JLabel titleLabel = new JLabel("📊 Dashboard - Resumen General");
+        titleLabel.setFont(UIConstants.SUBTITLE_FONT);
+        titleLabel.setForeground(Color.BLACK);
+        headerPanel.add(titleLabel);
 
-        // Tabla de productos con bajo stock
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        // Panel para las tablas (dividido en dos)
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        centerPanel.add(splitPane, BorderLayout.CENTER);
+        // Panel de estadísticas (cards)
+        JPanel statsPanel = new JPanel(new GridLayout(1, 2, 15, 0));
+        statsPanel.setBackground(UIConstants.BACKGROUND_COLOR);
+        
+        // Card de ventas del día
+        JPanel ventasCard = createStatsCard("💰 Ventas del Día", "S/ 0.00", UIConstants.PRIMARY_COLOR);
+        lblVentasDia = (JLabel) ((JPanel) ventasCard.getComponent(0)).getComponent(2); // El JLabel de valor es el índice 2 (después de título y strut)
+        
+        // Card de productos en stock
+        JPanel productosCard = createStatsCard("📦 Productos en Stock", "0", UIConstants.SECONDARY_COLOR);
+        lblTotalProductos = (JLabel) ((JPanel) productosCard.getComponent(0)).getComponent(2); // El JLabel de valor es el índice 2
+        
+        statsPanel.add(ventasCard);
+        statsPanel.add(productosCard);
+
+        // Panel central con tablas
+        JPanel centerPanel = new JPanel(new GridLayout(1, 2, 15, 0));
+        centerPanel.setBackground(UIConstants.BACKGROUND_COLOR);
         
         // Panel izquierdo: Productos con bajo stock
-        JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.setBorder(BorderFactory.createTitledBorder("Productos con Bajo Stock"));
+        JPanel leftPanel = createTablePanel("⚠️ Productos con Bajo Stock");
         
         modeloBajoStock = new DefaultTableModel(
-            new Object[]{"Código", "Nombre", "Stock Actual"}, 
+            new Object[]{"Código", "Nombre", "Stock"}, 
             0
         ) {
             @Override
@@ -68,16 +79,16 @@ public class DashboardPanel extends BasePanel {
             }
         };
 
-        tablaBajoStock = new JTable(modeloBajoStock);
+        tablaBajoStock = createStyledTable(modeloBajoStock);
         JScrollPane scrollPaneLeft = new JScrollPane(tablaBajoStock);
+        styleScrollPane(scrollPaneLeft);
         leftPanel.add(scrollPaneLeft, BorderLayout.CENTER);
         
         // Panel derecho: Top productos vendidos
-        JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.setBorder(BorderFactory.createTitledBorder("Top 5 Productos más Vendidos"));
+        JPanel rightPanel = createTablePanel("🏆 Top 5 Productos Más Vendidos");
         
         modeloTopProductos = new DefaultTableModel(
-            new Object[]{"Código", "Nombre", "Unidades Vendidas", "Total Ingresos"}, 
+            new Object[]{"Código", "Nombre", "Unidades", "Ingresos"}, 
             0
         ) {
             @Override
@@ -86,54 +97,118 @@ public class DashboardPanel extends BasePanel {
             }
         };
 
-        tablaTopProductos = new JTable(modeloTopProductos);
+        tablaTopProductos = createStyledTable(modeloTopProductos);
         JScrollPane scrollPaneRight = new JScrollPane(tablaTopProductos);
+        styleScrollPane(scrollPaneRight);
         rightPanel.add(scrollPaneRight, BorderLayout.CENTER);
         
-        // Agregar paneles al split
-        splitPane.setLeftComponent(leftPanel);
-        splitPane.setRightComponent(rightPanel);
-        splitPane.setResizeWeight(0.5); // Distribuir el espacio equitativamente
+        centerPanel.add(leftPanel);
+        centerPanel.add(rightPanel);
 
-        // Panel de botones para reportes
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton btnReporteInventario = new JButton("Generar Reporte de Inventario");
-        JButton btnReporteVentas = new JButton("Generar Reporte de Ventas");
-    JButton btnVerVentas = new JButton("Ver Ventas");
+        // Panel de botones
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
-        configureButton(btnReporteInventario);
-        configureButton(btnReporteVentas);
+        JButton btnReporteInventario = createStyledButton("📄 Reporte de Inventario", UIConstants.SECONDARY_COLOR);
+        JButton btnReporteVentas = createStyledButton("📈 Reporte de Ventas", UIConstants.PRIMARY_COLOR);
+        JButton btnVerVentas = createStyledButton("🛒 Ver Listado de Ventas", new Color(100, 100, 100));
         
         buttonPanel.add(btnReporteInventario);
         buttonPanel.add(btnReporteVentas);
-    buttonPanel.add(btnVerVentas);
+        buttonPanel.add(btnVerVentas);
 
         // Layout principal
-        JPanel mainPanel = new JPanel(new BorderLayout(0, 10));
-        mainPanel.add(topPanel, BorderLayout.NORTH);
+        JPanel mainPanel = new JPanel(new BorderLayout(0, 15));
+        mainPanel.setBackground(UIConstants.BACKGROUND_COLOR);
+        mainPanel.add(statsPanel, BorderLayout.NORTH);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         
-        add(mainPanel);
+        add(headerPanel, BorderLayout.NORTH);
+        add(mainPanel, BorderLayout.CENTER);
 
         // Eventos
         btnReporteInventario.addActionListener(e -> generarReporteInventario());
         btnReporteVentas.addActionListener(e -> generarReporteVentas());
         btnVerVentas.addActionListener(e -> {
-            java.awt.Window win = SwingUtilities.getWindowAncestor(this);
-            java.awt.Frame frame = (win instanceof java.awt.Frame) ? (java.awt.Frame) win : null;
+            Window win = SwingUtilities.getWindowAncestor(this);
+            Frame frame = (win instanceof Frame) ? (Frame) win : null;
             SalesListDialog dlg = new SalesListDialog(frame);
             dlg.setVisible(true);
         });
     }
 
-    private JPanel createIndicatorPanel(String titulo) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createTitledBorder(titulo),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+    private JPanel createStatsCard(String titulo, String valor, Color color) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
+        
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBackground(Color.WHITE);
+        
+        JLabel lblTitulo = new JLabel(titulo);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblTitulo.setForeground(new Color(100, 100, 100));
+        lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JLabel lblValor = new JLabel(valor);
+        lblValor.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        lblValor.setForeground(color);
+        lblValor.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        contentPanel.add(lblTitulo);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(lblValor);
+        
+        card.add(contentPanel, BorderLayout.CENTER);
+        return card;
+    }
+
+    private JPanel createTablePanel(String titulo) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+        
+        JLabel titleLabel = new JLabel(titulo);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        titleLabel.setForeground(Color.BLACK);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        
+        panel.add(titleLabel, BorderLayout.NORTH);
         return panel;
+    }
+
+    private JTable createStyledTable(DefaultTableModel model) {
+        JTable table = new JTable(model);
+        table.setFont(UIConstants.NORMAL_FONT);
+        table.setRowHeight(35);
+        table.setShowGrid(true);
+        table.setGridColor(new Color(230, 230, 230));
+        table.setBackground(Color.WHITE);
+        table.setForeground(Color.BLACK);
+        table.setSelectionBackground(new Color(230, 240, 255));
+        table.setSelectionForeground(Color.BLACK);
+        
+        table.getTableHeader().setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
+        table.getTableHeader().setBackground(new Color(245, 245, 245));
+        table.getTableHeader().setForeground(Color.BLACK);
+        table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getPreferredSize().width, 35));
+        
+        return table;
+    }
+
+    private void styleScrollPane(JScrollPane scrollPane) {
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+        scrollPane.setBackground(Color.WHITE);
+        scrollPane.getViewport().setBackground(Color.WHITE);
     }
 
     private void cargarDatos() {
@@ -142,7 +217,7 @@ public class DashboardPanel extends BasePanel {
             
             // Actualizar ventas del día
             double ventasDia = (double) estadisticas.get("ventasDia");
-            lblVentasDia.setText(String.format("S/. %.2f", ventasDia));
+            lblVentasDia.setText(String.format("S/ %.2f", ventasDia));
             
             // Actualizar total de productos
             long totalProductos = (long) estadisticas.get("totalProductos");
@@ -169,7 +244,7 @@ public class DashboardPanel extends BasePanel {
                     p.get("codigo"),
                     p.get("nombre"),
                     p.get("totalVendido"),
-                    String.format("S/. %.2f", (Double)p.get("totalIngresos"))
+                    String.format("S/ %.2f", (Double) p.get("totalIngresos"))
                 });
             }
         } catch (Exception e) {
@@ -186,7 +261,7 @@ public class DashboardPanel extends BasePanel {
             try {
                 File file = fileChooser.getSelectedFile();
                 reporteController.generarReporteInventarioExcel(file.getAbsolutePath());
-                showInfo("Reporte generado exitosamente");
+                showInfo("✓ Reporte generado exitosamente");
             } catch (Exception e) {
                 showError("Error al generar reporte: " + e.getMessage());
             }
@@ -201,11 +276,12 @@ public class DashboardPanel extends BasePanel {
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fileChooser.getSelectedFile();
-                // Por defecto, generamos el reporte del día actual
-                LocalDateTime inicio = LocalDateTime.now().withHour(0).withMinute(0);
-                LocalDateTime fin = LocalDateTime.now().withHour(23).withMinute(59);
+                // Usar el día actual completo: desde medianoche hasta el final del día
+                LocalDate today = LocalDate.now();
+                LocalDateTime inicio = LocalDateTime.of(today, LocalTime.MIN); // 00:00:00.000
+                LocalDateTime fin = LocalDateTime.of(today, LocalTime.MAX);    // 23:59:59.999999999
                 reporteController.generarReporteVentasExcel(file.getAbsolutePath(), inicio, fin);
-                showInfo("Reporte generado exitosamente");
+                showInfo("✓ Reporte generado exitosamente");
             } catch (Exception e) {
                 showError("Error al generar reporte: " + e.getMessage());
             }

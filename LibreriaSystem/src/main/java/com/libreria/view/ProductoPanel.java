@@ -2,9 +2,12 @@ package com.libreria.view;
 
 import com.libreria.controller.ProductoController;
 import com.libreria.model.Producto;
+import com.libreria.util.SessionManager;
+import com.libreria.util.UIConstants;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -23,59 +26,252 @@ public class ProductoPanel extends BasePanel {
     private JButton btnNuevo;
     private JButton btnEliminar;
     private Producto productoSeleccionado;
+    private SearchPanel searchPanel;
+    private TableRowSorter<DefaultTableModel> sorter;
+
+    // Categorías predefinidas
+    private final String[] CATEGORIAS = {
+        "Libros", "Novelas", "Cuentos", "Poesía", "Cuadernos", "Libretas", "Blocks",
+        "Lápices", "Lapiceros", "Bolígrafos", "Marcadores", "Colores", "Crayones",
+        "Témperas", "Acuarelas", "Papel", "Cartulina", "Folders", "Mochilas",
+        "Cartucheras", "Loncheras", "Calculadoras", "Reglas", "Compases",
+        "Pegamento", "Tijeras", "Correctores", "Arte y Manualidades",
+        "Tecnología", "Oficina", "Escolar", "Otros"
+    };
 
     public ProductoPanel() {
         this.controller = new ProductoController();
         initComponents();
+        configurarPermisos();
         loadProductos();
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        setBackground(UIConstants.BACKGROUND_COLOR);
+
+        // Panel de encabezado
+        JPanel headerPanel = createHeaderPanel();
 
         // Panel de búsqueda
-        SearchPanel searchPanel = new SearchPanel(new String[]{"Código", "Nombre", "Categoría"});
+        searchPanel = new SearchPanel(new String[]{"Código", "Nombre", "Categoría"});
         searchPanel.addSearchListener(e -> buscarProductos(searchPanel.getSearchText(), searchPanel.getSelectedFilter()));
 
-        // Panel de formulario
+        // Panel de formulario mejorado
         JPanel formPanel = createFormPanel();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-    txtCodigo = createTextField(15);
-    txtCodigo.setEditable(false); // Código generado automáticamente
-    txtNombre = createTextField(20);
-    cmbCategoria = new JComboBox<>();
-    cmbCategoria.setEditable(true);
-    txtPrecio = createTextField(10);
-    txtStock = createTextField(10);
-        txtDescripcion = new JTextArea(3, 20);
-
-        // Configurar validadores
-    InputValidator.setMaxLength(txtCodigo, 50);
-    InputValidator.setMaxLength(txtNombre, 100);
-        InputValidator.setDecimalOnly(txtPrecio);
-        InputValidator.setNumericOnly(txtStock);
-        txtDescripcion.setLineWrap(true);
-        JScrollPane scrollDescripcion = new JScrollPane(txtDescripcion);
-
-    addFormField(formPanel, "Código", txtCodigo, gbc, 0);
-    addFormField(formPanel, "Nombre", txtNombre, gbc, 1);
-    addFormField(formPanel, "Categoría", cmbCategoria, gbc, 2);
-        addFormField(formPanel, "Precio", txtPrecio, gbc, 3);
-        addFormField(formPanel, "Stock", txtStock, gbc, 4);
-        addFormField(formPanel, "Descripción", scrollDescripcion, gbc, 5);
 
         // Botones
-        btnNuevo = new JButton("Nuevo");
-        btnGuardar = new JButton("Guardar");
-        btnEliminar = new JButton("Eliminar");
+        btnNuevo = createStyledButton("➕ Nuevo", UIConstants.SECONDARY_COLOR);
+        btnGuardar = createStyledButton("💾 Guardar", UIConstants.PRIMARY_COLOR);
+        btnEliminar = createStyledButton("🗑️ Eliminar", UIConstants.DANGER_COLOR);
 
         JPanel buttonPanel = createButtonPanel(btnNuevo, btnGuardar, btnEliminar);
-        btnEliminar.setEnabled(false);
+        //btnEliminar.setEnabled(false);
 
-        // Tabla
+        // Panel superior completo - SIN SCROLL (FIJO)
+        JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+        topPanel.setBackground(Color.WHITE);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+        if (SessionManager.getInstance().isAdministrador()) {
+            topPanel.add(formPanel, BorderLayout.CENTER);
+            topPanel.add(buttonPanel, BorderLayout.SOUTH);
+        } else {
+            topPanel.add(createReadOnlyPanel(), BorderLayout.CENTER);
+        }
+
+        // Tabla mejorada
+        JPanel tablePanel = createTablePanel();
+
+        // Panel central que combina búsqueda y formulario - FIJO
+        JPanel fixedContent = new JPanel(new BorderLayout(0, 0));
+        fixedContent.setBackground(UIConstants.BACKGROUND_COLOR);
+        fixedContent.add(searchPanel, BorderLayout.NORTH);
+        fixedContent.add(topPanel, BorderLayout.CENTER);
+
+        // Layout principal: Header fijo, contenido fijo, tabla con scroll
+        add(headerPanel, BorderLayout.NORTH);
+        add(fixedContent, BorderLayout.CENTER);
+        add(tablePanel, BorderLayout.SOUTH);
+
+        // Eventos
+        setupEventListeners();
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, UIConstants.BORDER_COLOR),
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+
+        JLabel titleLabel = new JLabel("📦 Gestión de Inventario");
+        titleLabel.setFont(UIConstants.SUBTITLE_FONT);
+        titleLabel.setForeground(UIConstants.TEXT_COLOR);
+
+        JLabel modeLabel = new JLabel();
+        modeLabel.setFont(UIConstants.SMALL_FONT);
+        if (SessionManager.getInstance().isVendedor()) {
+            modeLabel.setText("Modo: Solo Lectura");
+            modeLabel.setForeground(UIConstants.TEXT_SECONDARY);
+        } else {
+            modeLabel.setText("Modo: Control Total");
+            modeLabel.setForeground(UIConstants.SECONDARY_COLOR);
+        }
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        titlePanel.setBackground(Color.WHITE);
+        titlePanel.add(titleLabel);
+        titlePanel.add(modeLabel);
+
+        headerPanel.add(titlePanel, BorderLayout.WEST);
+        return headerPanel;
+    }
+
+    protected JPanel createFormPanel() {
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIConstants.BORDER_COLOR, 1),
+            BorderFactory.createEmptyBorder(20, 25, 20, 25)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Inicializar componentes
+        txtCodigo = createStyledTextField(20);
+        txtCodigo.setEditable(false);
+        txtCodigo.setBackground(UIConstants.HOVER_COLOR);
+        txtCodigo.setVisible(false); // Oculto porque se genera automático
+
+        txtNombre = createStyledTextField(40);
+        InputValidator.setMaxLength(txtNombre, 100);
+
+        cmbCategoria = new JComboBox<>(CATEGORIAS);
+        cmbCategoria.setEditable(true);
+        cmbCategoria.setFont(UIConstants.NORMAL_FONT);
+        cmbCategoria.setPreferredSize(new Dimension(300, UIConstants.INPUT_HEIGHT));
+        cmbCategoria.setBackground(Color.WHITE);
+
+        txtPrecio = createStyledTextField(15);
+        InputValidator.setDecimalOnly(txtPrecio);
+
+        txtStock = createStyledTextField(15);
+        InputValidator.setNumericOnly(txtStock);
+
+        txtDescripcion = new JTextArea(3, 40);
+        txtDescripcion.setFont(UIConstants.NORMAL_FONT);
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+        txtDescripcion.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
+        scrollDesc.setPreferredSize(new Dimension(500, 80));
+
+        // Fila 1: Categoría (ocupa todo el ancho)
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.gridwidth = 1;
+        JLabel lblCategoria = createLabel("Categoría:");
+        formPanel.add(lblCategoria, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 3;
+        formPanel.add(cmbCategoria, gbc);
+
+        // Fila 2: Nombre (ocupa todo el ancho)
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0.0;
+        gbc.gridwidth = 1;
+        JLabel lblNombre = createLabel("Nombre:");
+        formPanel.add(lblNombre, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 3;
+        formPanel.add(txtNombre, gbc);
+
+        // Fila 3: Precio y Stock (lado a lado)
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0.0;
+        gbc.gridwidth = 1;
+        JLabel lblPrecio = createLabel("Precio (S/):");
+        formPanel.add(lblPrecio, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.3;
+        formPanel.add(txtPrecio, gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 0.0;
+        JLabel lblStock = createLabel("Stock:");
+        formPanel.add(lblStock, gbc);
+
+        gbc.gridx = 3;
+        gbc.weightx = 0.3;
+        formPanel.add(txtStock, gbc);
+
+        // Fila 4: Descripción (opcional, oculta por defecto)
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 0.0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        JLabel lblDesc = createLabel("Descripción:");
+        lblDesc.setVisible(false);
+        formPanel.add(lblDesc, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        scrollDesc.setVisible(false);
+        formPanel.add(scrollDesc, gbc);
+
+        return formPanel;
+    }
+
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
+        label.setForeground(UIConstants.TEXT_COLOR);
+        return label;
+    }
+
+    private JPanel createReadOnlyPanel() {
+        JPanel infoPanel = new JPanel(new GridBagLayout());
+        infoPanel.setBackground(UIConstants.HOVER_COLOR);
+        infoPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIConstants.BORDER_COLOR, 1),
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+
+        JLabel infoLabel = new JLabel("<html><div style='text-align: center;'>" +
+            "ℹ️<br><br>" +
+            "<b style='font-size: 16px;'>Modo de Consulta</b><br><br>" +
+            "Solo puedes visualizar el inventario.<br>" +
+            "Para realizar cambios, contacta al administrador." +
+            "</div></html>");
+        infoLabel.setFont(UIConstants.NORMAL_FONT);
+        infoLabel.setForeground(UIConstants.TEXT_SECONDARY);
+        infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        infoPanel.add(infoLabel);
+        return infoPanel;
+    }
+
+    private JPanel createTablePanel() {
+        // Modelo de tabla
         modelo = new DefaultTableModel(
             new Object[]{"ID", "Código", "Nombre", "Categoría", "Precio", "Stock"}, 
             0
@@ -86,25 +282,90 @@ public class ProductoPanel extends BasePanel {
             }
         };
 
+        // Tabla con visualización mejorada - FONDO BLANCO Y TEXTO NEGRO
         tabla = new JTable(modelo);
+        tabla.setFont(new Font("Arial", Font.PLAIN, 14));
+        tabla.setRowHeight(45);
+        tabla.setShowGrid(true);
+        tabla.setGridColor(new Color(220, 220, 220));
+        
+        // FONDO BLANCO Y TEXTO NEGRO (SIN TRANSPARENCIA)
+        tabla.setBackground(Color.WHITE);
+        tabla.setForeground(Color.BLACK);
+        tabla.setOpaque(true);
+        
+        // Selección con fondo azul claro y texto negro
+        tabla.setSelectionBackground(new Color(200, 220, 255));
+        tabla.setSelectionForeground(Color.BLACK);
+        
+        // Bordes internos de celdas visibles
+        tabla.setIntercellSpacing(new Dimension(1, 1));
+
+        // Header de la tabla - Gris claro con texto negro
+        tabla.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        tabla.getTableHeader().setBackground(new Color(240, 240, 240));
+        tabla.getTableHeader().setForeground(Color.BLACK);
+        tabla.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        tabla.getTableHeader().setOpaque(true);
+        tabla.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)));
+
+        // Configurar ancho de columnas
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(60);   // ID
+        tabla.getColumnModel().getColumn(0).setMaxWidth(80);
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(120);  // Código
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(350);  // Nombre
+        tabla.getColumnModel().getColumn(3).setPreferredWidth(180);  // Categoría
+        tabla.getColumnModel().getColumn(4).setPreferredWidth(120);  // Precio
+        tabla.getColumnModel().getColumn(5).setPreferredWidth(100);  // Stock
+
+        // Alineación central para todas las columnas
+        javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+        centerRenderer.setBackground(Color.WHITE);
+        centerRenderer.setForeground(Color.BLACK);
+        centerRenderer.setOpaque(true);
+        
+        for (int i = 0; i < tabla.getColumnCount(); i++) {
+            tabla.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+        // Ordenamiento
+        sorter = new TableRowSorter<>(modelo);
+        tabla.setRowSorter(sorter);
+
+        // ScrollPane con fondo blanco
         JScrollPane scrollPane = new JScrollPane(tabla);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        scrollPane.setPreferredSize(new Dimension(0, 350));
+        scrollPane.setBackground(Color.WHITE);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setOpaque(true);
 
-        // Layout
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(formPanel, BorderLayout.CENTER);
-        topPanel.add(buttonPanel, BorderLayout.SOUTH);
+        // Panel contenedor con fondo blanco
+        JPanel tablePanel = new JPanel(new BorderLayout(0, 10));
+        tablePanel.setBackground(Color.WHITE);
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+        tablePanel.setOpaque(true);
 
-        add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        JLabel tableTitle = new JLabel("Lista de Productos");
+        tableTitle.setFont(new Font("Arial", Font.BOLD, 16));
+        tableTitle.setForeground(Color.BLACK);
 
-        // Eventos
+        tablePanel.add(tableTitle, BorderLayout.NORTH);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+        return tablePanel;
+    }
+
+    private void setupEventListeners() {
         btnNuevo.addActionListener(this::btnNuevoActionPerformed);
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
+        
         tabla.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int row = tabla.getSelectedRow();
-                if (row != -1) {
+                if (row != -1 && SessionManager.getInstance().isAdministrador()) {
                     cargarProductoSeleccionado(row);
                     btnEliminar.setEnabled(true);
                 }
@@ -112,19 +373,38 @@ public class ProductoPanel extends BasePanel {
         });
     }
 
+    private void configurarPermisos() {
+        boolean esAdmin = SessionManager.getInstance().isAdministrador();
+        if (!esAdmin) {
+            btnNuevo.setEnabled(false);
+            btnGuardar.setEnabled(false);
+            btnEliminar.setEnabled(false);
+            txtNombre.setEditable(false);
+            txtPrecio.setEditable(false);
+            txtStock.setEditable(false);
+            cmbCategoria.setEnabled(false);
+        }
+    }
+
     public void loadProductos() {
         try {
             List<Producto> productos = controller.obtenerTodos();
             actualizarTabla(productos);
-                // Actualizar lista de categorías (deduplicada, case-insensitive)
-                java.util.Set<String> categorias = new java.util.TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-                for (Producto p : productos) {
-                    if (p.getCategoria() != null && !p.getCategoria().trim().isEmpty()) {
-                        categorias.add(p.getCategoria().trim());
+            
+            if (productos.isEmpty() && SessionManager.getInstance().isAdministrador()) {
+                SwingUtilities.invokeLater(() -> {
+                    int option = JOptionPane.showConfirmDialog(
+                        this,
+                        "El inventario está vacío.\n¿Desea agregar el primer producto?",
+                        "Inventario Vacío",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                    if (option == JOptionPane.YES_OPTION) {
+                        btnNuevoActionPerformed(null);
                     }
-                }
-                cmbCategoria.removeAllItems();
-                for (String c : categorias) cmbCategoria.addItem(c);
+                });
+            }
         } catch (Exception e) {
             showError("Error al cargar productos: " + e.getMessage());
         }
@@ -138,7 +418,7 @@ public class ProductoPanel extends BasePanel {
                 p.getCodigo(),
                 p.getNombre(),
                 p.getCategoria(),
-                p.getPrecio(),
+                String.format("S/ %.2f", p.getPrecio()),
                 p.getStock()
             });
         }
@@ -146,15 +426,19 @@ public class ProductoPanel extends BasePanel {
 
     private void cargarProductoSeleccionado(int row) {
         try {
-            int id = (int) modelo.getValueAt(row, 0);
+            int modelRow = tabla.convertRowIndexToModel(row);
+            int id = (int) modelo.getValueAt(modelRow, 0);
             productoSeleccionado = controller.obtenerPorId(id);
+            
             if (productoSeleccionado != null) {
                 txtCodigo.setText(productoSeleccionado.getCodigo());
                 txtNombre.setText(productoSeleccionado.getNombre());
                 cmbCategoria.setSelectedItem(productoSeleccionado.getCategoria());
                 txtPrecio.setText(String.valueOf(productoSeleccionado.getPrecio()));
                 txtStock.setText(String.valueOf(productoSeleccionado.getStock()));
-                txtDescripcion.setText(productoSeleccionado.getDescripcion());
+                if (txtDescripcion != null) {
+                    txtDescripcion.setText(productoSeleccionado.getDescripcion());
+                }
             }
         } catch (Exception e) {
             showError("Error al cargar producto: " + e.getMessage());
@@ -162,9 +446,14 @@ public class ProductoPanel extends BasePanel {
     }
 
     private void btnNuevoActionPerformed(ActionEvent evt) {
+        if (!SessionManager.getInstance().isAdministrador()) {
+            showError("No tienes permisos para realizar esta acción");
+            return;
+        }
         limpiarFormulario();
         productoSeleccionado = null;
         btnEliminar.setEnabled(false);
+        cmbCategoria.requestFocus();
     }
 
     private void buscarProductos(String texto, String filtro) {
@@ -178,7 +467,7 @@ public class ProductoPanel extends BasePanel {
                         case "Categoría" -> p.getCategoria();
                         default -> "";
                     };
-                    return valor.toLowerCase().contains(texto.toLowerCase());
+                    return valor != null && valor.toLowerCase().contains(texto.toLowerCase());
                 })
                 .collect(java.util.stream.Collectors.toList());
             actualizarTabla(resultados);
@@ -188,15 +477,18 @@ public class ProductoPanel extends BasePanel {
     }
 
     private void btnGuardarActionPerformed(ActionEvent evt) {
+        if (!SessionManager.getInstance().isAdministrador()) {
+            showError("No tienes permisos para realizar esta acción");
+            return;
+        }
+
         try {
-            // Validar campos requeridos
             if (!InputValidator.validateRequired(txtNombre, "Nombre") ||
                 !InputValidator.validatePositiveNumber(txtPrecio, "Precio") ||
                 !InputValidator.validateNonNegativeNumber(txtStock, "Stock")) {
                 return;
             }
 
-            // Validar categoría (editable combobox)
             String categoriaTexto = "";
             if (cmbCategoria.getEditor() != null) {
                 Object item = cmbCategoria.getEditor().getItem();
@@ -204,6 +496,7 @@ public class ProductoPanel extends BasePanel {
             }
             if (categoriaTexto.isEmpty()) {
                 showError("Categoría es un campo requerido");
+                cmbCategoria.requestFocus();
                 return;
             }
 
@@ -212,20 +505,19 @@ public class ProductoPanel extends BasePanel {
                 producto.setId(productoSeleccionado.getId());
             }
             producto.setCodigo(txtCodigo.getText());
-            producto.setNombre(txtNombre.getText());
+            producto.setNombre(txtNombre.getText().trim());
             producto.setCategoria(categoriaTexto);
             producto.setPrecio(Double.parseDouble(txtPrecio.getText()));
             producto.setStock(Integer.parseInt(txtStock.getText()));
-            producto.setDescripcion(txtDescripcion.getText());
+            producto.setDescripcion(txtDescripcion.getText() != null ? txtDescripcion.getText().trim() : "");
 
             if (productoSeleccionado == null) {
                 controller.crear(producto);
-                // Actualizar campo código con el generado por el controlador/DAO
                 txtCodigo.setText(producto.getCodigo());
-                showInfo("Producto creado exitosamente");
+                showInfo("✓ Producto creado exitosamente\nCódigo: " + producto.getCodigo());
             } else {
                 controller.actualizar(producto);
-                showInfo("Producto actualizado exitosamente");
+                showInfo("✓ Producto actualizado exitosamente");
             }
 
             loadProductos();
@@ -233,17 +525,25 @@ public class ProductoPanel extends BasePanel {
             productoSeleccionado = null;
             btnEliminar.setEnabled(false);
         } catch (NumberFormatException e) {
-            showError("Por favor, ingrese valores numéricos válidos para precio y stock");
+            showError("Por favor, ingrese valores numéricos válidos");
         } catch (Exception e) {
             showError("Error al guardar producto: " + e.getMessage());
         }
     }
 
     private void btnEliminarActionPerformed(ActionEvent evt) {
-        if (productoSeleccionado != null && showConfirm("¿Está seguro de eliminar este producto?")) {
+        if (!SessionManager.getInstance().isAdministrador()) {
+            showError("No tienes permisos para realizar esta acción");
+            return;
+        }
+
+        if (productoSeleccionado != null && showConfirm(
+            "¿Está seguro de eliminar este producto?\n\n" +
+            "Producto: " + productoSeleccionado.getNombre() + "\n" +
+            "Código: " + productoSeleccionado.getCodigo())) {
             try {
                 controller.eliminar(productoSeleccionado.getId());
-                showInfo("Producto eliminado exitosamente");
+                showInfo("✓ Producto eliminado exitosamente");
                 loadProductos();
                 limpiarFormulario();
                 productoSeleccionado = null;
@@ -257,10 +557,10 @@ public class ProductoPanel extends BasePanel {
     private void limpiarFormulario() {
         txtCodigo.setText("");
         txtNombre.setText("");
-        if (cmbCategoria != null) cmbCategoria.setSelectedIndex(-1);
+        cmbCategoria.setSelectedIndex(-1);
         txtPrecio.setText("");
         txtStock.setText("");
-        txtDescripcion.setText("");
+        if (txtDescripcion != null) txtDescripcion.setText("");
         tabla.clearSelection();
     }
 }

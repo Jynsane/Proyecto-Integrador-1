@@ -1,73 +1,48 @@
 package com.libreria.util;
 
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class UIConstants {
-    // Colores principales
-    public static final Color PRIMARY_COLOR = new Color(87, 127, 101);    // Verde principal
-    public static final Color SECONDARY_COLOR = new Color(196, 219, 204); // Verde claro
-    public static final Color BACKGROUND_COLOR = new Color(240, 248, 242); // Fondo verdoso muy claro
-    public static final Color TEXT_COLOR = new Color(33, 37, 41);         // Texto oscuro
-    public static final Color ACCENT_COLOR = new Color(63, 100, 75);      // Verde oscuro para acentos
+    // Paleta de colores moderna
+    public static final Color PRIMARY_COLOR = new Color(37, 99, 235); // Azul moderno
+    public static final Color PRIMARY_DARK = new Color(29, 78, 216);
+    public static final Color PRIMARY_LIGHT = new Color(96, 165, 250);
+    
+    public static final Color SECONDARY_COLOR = new Color(16, 185, 129); // Verde esmeralda
+    public static final Color SECONDARY_DARK = new Color(5, 150, 105);
+    
+    public static final Color ACCENT_COLOR = new Color(245, 158, 11); // Ámbar
+    public static final Color DANGER_COLOR = new Color(239, 68, 68); // Rojo
+    public static final Color WARNING_COLOR = new Color(251, 191, 36); // Amarillo
+    
+    public static final Color BACKGROUND_COLOR = new Color(249, 250, 251); // Gris muy claro
+    public static final Color CARD_BACKGROUND = Color.WHITE;
+    public static final Color SIDEBAR_COLOR = new Color(99, 124, 111); // Verde personalizado #637c6f
+    public static final Color SIDEBAR_LIGHT = new Color(202, 222, 203); // Verde claro para hover
+    
+    public static final Color TEXT_COLOR = new Color(17, 24, 39);
+    public static final Color TEXT_SECONDARY = new Color(107, 114, 128);
+    public static final Color TEXT_WHITE = Color.WHITE;
+    
+    public static final Color BORDER_COLOR = new Color(229, 231, 235);
+    public static final Color HOVER_COLOR = new Color(243, 244, 246);
     
     // Fuentes
-    public static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
-    public static final Font HEADER_FONT = new Font("Segoe UI", Font.BOLD, 18);
+    public static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 28);
+    public static final Font SUBTITLE_FONT = new Font("Segoe UI", Font.BOLD, 20);
+    public static final Font HEADING_FONT = new Font("Segoe UI", Font.BOLD, 16);
     public static final Font NORMAL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     public static final Font SMALL_FONT = new Font("Segoe UI", Font.PLAIN, 12);
+    public static final Font BUTTON_FONT = new Font("Segoe UI", Font.BOLD, 14);
     
-    // Bordes
-    public static final Border PANEL_BORDER = BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(SECONDARY_COLOR, 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-    );
+    // Dimensiones
+    public static final int SIDEBAR_WIDTH = 250;
+    public static final int BUTTON_HEIGHT = 40;
+    public static final int INPUT_HEIGHT = 38;
+    public static final int BORDER_RADIUS = 8;
+    public static final int PADDING = 20;
+    public static final int SPACING = 10;
     
-    // Estilos de botones
-    public static void setupButton(JButton button, Color background, Color foreground) {
-        button.setBackground(background);
-        button.setForeground(foreground);
-        button.setFont(NORMAL_FONT);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setOpaque(true);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
-    
-    public static void styleDefaultButton(JButton button) {
-        setupButton(button, PRIMARY_COLOR, Color.WHITE);
-    }
-    
-    public static void styleSecondaryButton(JButton button) {
-        setupButton(button, SECONDARY_COLOR, TEXT_COLOR);
-    }
-    
-    // Estilos de campos de texto
-    public static void setupTextField(JTextField textField) {
-        textField.setFont(NORMAL_FONT);
-        textField.setBackground(Color.WHITE);
-        textField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(SECONDARY_COLOR),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
-    }
-    
-    // Estilos de tablas
-    public static void setupTable(JTable table) {
-        table.setFont(NORMAL_FONT);
-        table.setGridColor(SECONDARY_COLOR);
-        table.setSelectionBackground(SECONDARY_COLOR);
-        table.setSelectionForeground(TEXT_COLOR);
-        table.setRowHeight(25);
-        table.getTableHeader().setFont(NORMAL_FONT.deriveFont(Font.BOLD));
-        table.getTableHeader().setBackground(PRIMARY_COLOR);
-        table.getTableHeader().setForeground(Color.WHITE);
-    }
-    
-    // Estilos de paneles
-    public static void setupPanel(JPanel panel) {
-        panel.setBackground(BACKGROUND_COLOR);
-        panel.setBorder(PANEL_BORDER);
-    }
+    // Efectos
+    public static final int SHADOW_SIZE = 4;
 }

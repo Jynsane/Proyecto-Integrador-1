@@ -1,7 +1,7 @@
 package com.libreria.dao;
 
 import com.libreria.model.Producto;
-import com.libreria.model.Venta;
+//import com.libreria.model.Venta;
 import com.libreria.util.DatabaseConnection;
 
 import java.sql.*;
@@ -10,11 +10,11 @@ import java.util.*;
 
 public class ReporteDAO {
     private final ProductoDAO productoDAO;
-    private final VentaDAO ventaDAO;
+    //private final VentaDAO ventaDAO;
     
     public ReporteDAO() {
         this.productoDAO = new ProductoDAO();
-        this.ventaDAO = new VentaDAO();
+        //this.ventaDAO = new VentaDAO();
     }
     
     public Map<String, Object> obtenerEstadisticasVentas(LocalDateTime inicio, LocalDateTime fin) throws SQLException {

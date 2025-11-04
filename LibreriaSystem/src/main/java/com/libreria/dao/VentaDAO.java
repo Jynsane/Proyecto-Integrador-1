@@ -2,7 +2,7 @@ package com.libreria.dao;
 
 import com.libreria.model.Venta;
 import com.libreria.model.DetalleVenta;
-import com.libreria.model.Producto;
+//import com.libreria.model.Producto;
 import com.libreria.util.DatabaseConnection;
 
 import java.sql.*;
@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 
 public class VentaDAO implements CrudDAO<Venta> {
     private final DetalleVentaDAO detalleVentaDAO;
-    private final ProductoDAO productoDAO;
+    //private final ProductoDAO productoDAO;
     
     public VentaDAO() {
         this.detalleVentaDAO = new DetalleVentaDAO();
-        this.productoDAO = new ProductoDAO();
+       // this.productoDAO = new ProductoDAO();
     }
     
     @Override
