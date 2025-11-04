@@ -141,7 +141,7 @@ public class VentaPanel extends BasePanel {
             }
         });
 
-        // Tabla de detalles con mejor visualización 
+        // Tabla de detalles
         modeloDetalle = new DefaultTableModel(
             new Object[]{"Producto", "Cantidad", "Precio Unit.", "Subtotal", ""}, 
             0
