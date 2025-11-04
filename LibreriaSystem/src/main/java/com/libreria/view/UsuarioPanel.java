@@ -146,7 +146,7 @@ public class UsuarioPanel extends BasePanel {
         add(topPanel, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.SOUTH);
 
-        // Eventos
+        
         btnNuevo.addActionListener(this::btnNuevoActionPerformed);
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
