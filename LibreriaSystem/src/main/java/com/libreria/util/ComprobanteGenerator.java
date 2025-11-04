@@ -226,7 +226,7 @@ public class ComprobanteGenerator {
             g2d.drawString(String.format("S/ %.2f", venta.getTotal()), 290, y);
             y += lineHeight + 30;
             
-            // Pie
+         
             g2d.setFont(new Font("Arial", Font.ITALIC, 10));
             g2d.drawString("¡Gracias por su compra!", 110, y);
         }
