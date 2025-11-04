@@ -2,6 +2,7 @@ package com.libreria.view;
 
 import javax.swing.*;
 
+//Clase Login_frame
 public class LoginFrame extends JFrame {
     
     public LoginFrame() {
