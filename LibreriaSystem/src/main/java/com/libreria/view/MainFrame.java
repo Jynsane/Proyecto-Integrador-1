@@ -52,7 +52,7 @@ public class MainFrame extends JFrame {
         ventaPanel = new VentaPanel();
         dashboardPanel = new DashboardPanel();
 
-        // Panel de bienvenida mejorado
+       
         JPanel welcomePanel = createWelcomePanel();
 
         // Agregar paneles al CardLayout
@@ -74,17 +74,17 @@ public class MainFrame extends JFrame {
         add(mainPanel);
     }
 
-    // MÉTODOS DEL SIDEBAR MODIFICADOS
+    // MÉTODOS DEL SIDEBAR 
 
     private void createSidebar() {
         sidebarPanel = new JPanel();
         sidebarPanel.setPreferredSize(new Dimension(UIConstants.SIDEBAR_WIDTH, 0));
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
         sidebarPanel.setBackground(UIConstants.SIDEBAR_COLOR);
-        // Borde estilizado del segundo código
+      
         sidebarPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, UIConstants.BORDER_COLOR));
 
-        // Logo y título (CENTRADO)
+        // Logo y título 
         JPanel logoPanel = new JPanel();
         logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.Y_AXIS));
         logoPanel.setBackground(UIConstants.SIDEBAR_COLOR);
@@ -103,7 +103,7 @@ public class MainFrame extends JFrame {
         logoPanel.add(Box.createVerticalStrut(10));
         logoPanel.add(logoLabel);
 
-        // Panel de usuario - Compacto y centrado
+        // Panel de usuario 
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
         userPanel.setBackground(new Color(31, 41, 55)); // Color oscuro para contraste
@@ -127,7 +127,7 @@ public class MainFrame extends JFrame {
         userPanel.add(rolLabel);
         userPanel.add(Box.createVerticalStrut(3));
 
-        // Botones de navegación (Con padding y centrados)
+        // Botones de navegación 
         JPanel navPanel = new JPanel();
         navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
         navPanel.setBackground(UIConstants.SIDEBAR_COLOR);
@@ -169,11 +169,11 @@ public class MainFrame extends JFrame {
         // Agregar componentes al sidebar
         sidebarPanel.add(logoPanel);
         sidebarPanel.add(userPanel);
-        sidebarPanel.add(Box.createVerticalStrut(10)); // Espacio entre info de usuario y nav
+        sidebarPanel.add(Box.createVerticalStrut(10)); 
         sidebarPanel.add(navPanel);
         sidebarPanel.add(Box.createVerticalGlue());
         sidebarPanel.add(btnLogout);
-        sidebarPanel.add(Box.createVerticalStrut(20)); // Espacio al final
+        sidebarPanel.add(Box.createVerticalStrut(20)); 
     }
 
     private JButton createSidebarButton(String text, String cardName, boolean isNavButton) {
@@ -183,14 +183,14 @@ public class MainFrame extends JFrame {
         button.setBackground(UIConstants.SIDEBAR_COLOR);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
-        // Ancho reducido para centrarse dentro del sidebar
+        
         button.setMaximumSize(new Dimension(UIConstants.SIDEBAR_WIDTH - 20, 45));
         button.setAlignmentX(Component.CENTER_ALIGNMENT); // Clave para centrar
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        // Efecto hover (del segundo código)
+        // Efecto hover 
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -216,7 +216,7 @@ public class MainFrame extends JFrame {
 
         if (cardName != null) {
             button.addActionListener(e -> {
-                // Acciones específicas antes de mostrar la tarjeta (Mantenido del código original)
+               
                 switch (cardName) {
                     case "dashboard":
                         if (dashboardPanel != null) dashboardPanel.actualizarDashboard();
@@ -232,7 +232,6 @@ public class MainFrame extends JFrame {
                         break;
                 }
 
-                // Mostrar tarjeta
                 cardLayout.show(contentPanel, cardName);
             });
         }
@@ -294,7 +293,7 @@ public class MainFrame extends JFrame {
         if (option == JOptionPane.YES_OPTION) {
             SessionManager.getInstance().cerrarSesion();
             dispose();
-            // NOTA: Se asume que LoginFrame existe
+
             new LoginFrame().setVisible(true);
         }
     }
