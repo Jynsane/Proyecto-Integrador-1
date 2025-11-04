@@ -141,7 +141,7 @@ public class UsuarioPanel extends BasePanel {
         tablePanel.add(tableTitle, BorderLayout.NORTH);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Añadir paneles al contenedor principal
+       
         add(headerPanel, BorderLayout.NORTH);
         add(topPanel, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.SOUTH);
