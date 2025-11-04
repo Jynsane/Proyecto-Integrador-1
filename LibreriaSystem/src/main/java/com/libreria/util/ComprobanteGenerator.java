@@ -96,8 +96,7 @@ public class ComprobanteGenerator {
             
             g2d.drawString("Método de Pago: " + venta.getMetodoPago(), 50, y);
             y += lineHeight + 20;
-            
-            // Línea separadora
+           
             g2d.drawLine(50, y, 500, y);
             y += 20;
             
@@ -130,7 +129,6 @@ public class ComprobanteGenerator {
             g2d.drawLine(50, y, 500, y);
             y += 20;
             
-            // Total
             g2d.setFont(new Font("Arial", Font.BOLD, 14));
             g2d.drawString("TOTAL:", 360, y);
             g2d.drawString(String.format("S/ %.2f", venta.getTotal()), 430, y);
