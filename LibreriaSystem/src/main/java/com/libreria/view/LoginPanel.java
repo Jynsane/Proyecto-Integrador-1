@@ -63,17 +63,17 @@ public class LoginPanel extends JPanel {
         usernameContainer.setLayout(new BoxLayout(usernameContainer, BoxLayout.Y_AXIS));
         usernameContainer.setBackground(Color.WHITE);
         usernameContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        usernameContainer.setMaximumSize(new Dimension(360, 80)); // Ancho de 360px para centrar
+        usernameContainer.setMaximumSize(new Dimension(360, 80)); 
         
         JLabel lblUsername = new JLabel("Usuario");
         lblUsername.setFont(UIConstants.NORMAL_FONT.deriveFont(Font.BOLD));
         lblUsername.setForeground(UIConstants.TEXT_COLOR);
-        lblUsername.setAlignmentX(Component.LEFT_ALIGNMENT); // Alineado a la izquierda dentro del contenedor
+        lblUsername.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         txtUsername = new JTextField();
         txtUsername.setFont(UIConstants.NORMAL_FONT);
         txtUsername.setPreferredSize(new Dimension(360, UIConstants.INPUT_HEIGHT));
-        txtUsername.setMaximumSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); // Ancho fijo
+        txtUsername.setMaximumSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); 
         txtUsername.setAlignmentX(Component.LEFT_ALIGNMENT);
         txtUsername.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(UIConstants.BORDER_COLOR, 1),
@@ -96,7 +96,7 @@ public class LoginPanel extends JPanel {
         lblPassword.setForeground(UIConstants.TEXT_COLOR);
         lblPassword.setAlignmentX(Component.LEFT_ALIGNMENT); 
         
-        // Panel que contiene el campo de texto y el botón "ojo"
+        // Panel que contiene el campo de texto 
         JPanel passwordPanel = new JPanel(new BorderLayout(5, 0));
         passwordPanel.setBackground(Color.WHITE);
         passwordPanel.setMaximumSize(new Dimension(360, UIConstants.INPUT_HEIGHT)); 
@@ -110,7 +110,7 @@ public class LoginPanel extends JPanel {
             BorderFactory.createEmptyBorder(8, 12, 8, 12)
         ));
         
-        // Botón de ojito para mostrar/ocultar contraseña
+        // Botón para mostrar/ocultar contraseña
         btnShowPassword = new JToggleButton("👁");
         btnShowPassword.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnShowPassword.setPreferredSize(new Dimension(45, UIConstants.INPUT_HEIGHT));
@@ -150,7 +150,7 @@ public class LoginPanel extends JPanel {
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
         infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        infoPanel.setMaximumSize(new Dimension(360, 130)); // Ancho fijo
+        infoPanel.setMaximumSize(new Dimension(360, 130)); 
         
         JLabel lblInfo = new JLabel("👤 Usuarios de prueba:");
         lblInfo.setFont(UIConstants.SMALL_FONT.deriveFont(Font.BOLD));
@@ -197,7 +197,7 @@ public class LoginPanel extends JPanel {
         loginCard.add(Box.createVerticalStrut(10));
         loginCard.add(usernameContainer); 
         loginCard.add(Box.createVerticalStrut(15));
-        loginCard.add(passwordContainer); // Contenedor centrado con ojito
+        loginCard.add(passwordContainer); 
         loginCard.add(Box.createVerticalStrut(25));
         loginCard.add(btnLogin);
         loginCard.add(Box.createVerticalStrut(20));
