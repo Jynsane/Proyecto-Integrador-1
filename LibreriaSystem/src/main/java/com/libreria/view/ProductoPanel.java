@@ -29,7 +29,7 @@ public class ProductoPanel extends BasePanel {
     private SearchPanel searchPanel;
     private TableRowSorter<DefaultTableModel> sorter;
 
-    // Categorías predefinidas
+    // Categorías 
     private final String[] CATEGORIAS = {
         "Libros", "Novelas", "Cuentos", "Poesía", "Cuadernos", "Libretas", "Blocks",
         "Lápices", "Lapiceros", "Bolígrafos", "Marcadores", "Colores", "Crayones",
@@ -57,7 +57,7 @@ public class ProductoPanel extends BasePanel {
         searchPanel = new SearchPanel(new String[]{"Código", "Nombre", "Categoría"});
         searchPanel.addSearchListener(e -> buscarProductos(searchPanel.getSearchText(), searchPanel.getSelectedFilter()));
 
-        // Panel de formulario mejorado
+        // Panel de formulario 
         JPanel formPanel = createFormPanel();
 
         // Botones
@@ -68,7 +68,7 @@ public class ProductoPanel extends BasePanel {
         JPanel buttonPanel = createButtonPanel(btnNuevo, btnGuardar, btnEliminar);
         //btnEliminar.setEnabled(false);
 
-        // Panel superior completo - SIN SCROLL (FIJO)
+        // Panel superior completo 
         JPanel topPanel = new JPanel(new BorderLayout(0, 10));
         topPanel.setBackground(Color.WHITE);
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -80,21 +80,18 @@ public class ProductoPanel extends BasePanel {
             topPanel.add(createReadOnlyPanel(), BorderLayout.CENTER);
         }
 
-        // Tabla mejorada
         JPanel tablePanel = createTablePanel();
 
-        // Panel central que combina búsqueda y formulario - FIJO
         JPanel fixedContent = new JPanel(new BorderLayout(0, 0));
         fixedContent.setBackground(UIConstants.BACKGROUND_COLOR);
         fixedContent.add(searchPanel, BorderLayout.NORTH);
         fixedContent.add(topPanel, BorderLayout.CENTER);
 
-        // Layout principal: Header fijo, contenido fijo, tabla con scroll
+        // Layout principal con scroll
         add(headerPanel, BorderLayout.NORTH);
         add(fixedContent, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.SOUTH);
 
-        // Eventos
         setupEventListeners();
     }
 
@@ -146,7 +143,7 @@ public class ProductoPanel extends BasePanel {
         txtCodigo = createStyledTextField(20);
         txtCodigo.setEditable(false);
         txtCodigo.setBackground(UIConstants.HOVER_COLOR);
-        txtCodigo.setVisible(false); // Oculto porque se genera automático
+        txtCodigo.setVisible(false); 
 
         txtNombre = createStyledTextField(40);
         InputValidator.setMaxLength(txtNombre, 100);
@@ -174,7 +171,7 @@ public class ProductoPanel extends BasePanel {
         JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
         scrollDesc.setPreferredSize(new Dimension(500, 80));
 
-        // Fila 1: Categoría (ocupa todo el ancho)
+        // Fila 1: Categoria
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.0;
@@ -187,7 +184,7 @@ public class ProductoPanel extends BasePanel {
         gbc.gridwidth = 3;
         formPanel.add(cmbCategoria, gbc);
 
-        // Fila 2: Nombre (ocupa todo el ancho)
+        // Fila 2: Nombre 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weightx = 0.0;
@@ -200,7 +197,7 @@ public class ProductoPanel extends BasePanel {
         gbc.gridwidth = 3;
         formPanel.add(txtNombre, gbc);
 
-        // Fila 3: Precio y Stock (lado a lado)
+        // Fila 3: Precio y Stock 
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weightx = 0.0;
@@ -221,7 +218,7 @@ public class ProductoPanel extends BasePanel {
         gbc.weightx = 0.3;
         formPanel.add(txtStock, gbc);
 
-        // Fila 4: Descripción (opcional, oculta por defecto)
+        // Fila 4: Descripción (oculta)
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.weightx = 0.0;
@@ -282,26 +279,23 @@ public class ProductoPanel extends BasePanel {
             }
         };
 
-        // Tabla con visualización mejorada - FONDO BLANCO Y TEXTO NEGRO
+        // Tabla
         tabla = new JTable(modelo);
         tabla.setFont(new Font("Arial", Font.PLAIN, 14));
         tabla.setRowHeight(45);
         tabla.setShowGrid(true);
         tabla.setGridColor(new Color(220, 220, 220));
         
-        // FONDO BLANCO Y TEXTO NEGRO (SIN TRANSPARENCIA)
         tabla.setBackground(Color.WHITE);
         tabla.setForeground(Color.BLACK);
         tabla.setOpaque(true);
         
-        // Selección con fondo azul claro y texto negro
         tabla.setSelectionBackground(new Color(200, 220, 255));
         tabla.setSelectionForeground(Color.BLACK);
-        
-        // Bordes internos de celdas visibles
+
         tabla.setIntercellSpacing(new Dimension(1, 1));
 
-        // Header de la tabla - Gris claro con texto negro
+        // Header de la tabla 
         tabla.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         tabla.getTableHeader().setBackground(new Color(240, 240, 240));
         tabla.getTableHeader().setForeground(Color.BLACK);
