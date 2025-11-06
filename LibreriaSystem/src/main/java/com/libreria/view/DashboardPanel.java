@@ -52,7 +52,7 @@ public class DashboardPanel extends BasePanel {
         mainPanel.setBackground(UIConstants.BACKGROUND_COLOR);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Header
+
         JPanel headerPanel = createHeaderPanel();
         
         // Panel de 2 columnas
