@@ -6,9 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 
-//Configuración de Base de Datos H2 para Testing
-//Esta clase gestiona la creación, población y limpieza de la BD de pruebas
-
 public class TestDatabaseConfig {
     
     // Conexión H2 en memoria
@@ -18,9 +15,6 @@ public class TestDatabaseConfig {
     
     private static Connection connection;
     
-  
-  // Obtiene la conexión H2 para tests
-  //Si no existe, la crea
     
     public static Connection getTestConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
@@ -116,7 +110,6 @@ public class TestDatabaseConfig {
     }
     
     //Inserta datos de prueba en la base de datos
-      //Se ejecuta antes de cada test
 
     public static void insertTestData() throws SQLException {
         System.out.println("📝 Insertando datos de prueba...");
@@ -124,7 +117,7 @@ public class TestDatabaseConfig {
         Connection conn = getTestConnection();
         try (Statement stmt = conn.createStatement()) {
             
-            // Insertar productos de prueba
+            
             stmt.execute("""
                 INSERT INTO productos (codigo, nombre, categoria, precio, stock, descripcion) VALUES
                 ('P000001', 'Cuaderno A4 Universitario', 'Papelería', 15.50, 100, 'Cuaderno de 100 hojas'),
@@ -134,7 +127,7 @@ public class TestDatabaseConfig {
                 ('P000005', 'Calculadora Científica', 'Electrónica', 45.00, 30, 'Calculadora Casio FX-82')
             """);
             
-            // Insertar usuarios de prueba
+        
             stmt.execute("""
                 INSERT INTO usuarios (username, password, nombre, rol, activo) VALUES
                 ('admin', 'admin123', 'Administrador Test', 'ADMINISTRADOR', true),
@@ -146,8 +139,6 @@ public class TestDatabaseConfig {
     }
     
     
-    //Limpia todos los datos de las tablas
-    //Se ejecuta después de cada test
    
     public static void cleanDatabase() throws SQLException {
         Connection conn = getTestConnection();
@@ -187,9 +178,7 @@ public class TestDatabaseConfig {
         }
     }
     
-    
-     //Método de utilidad para ejecutar cualquier SQL
-     // Útil para preparar datos específicos en tests individuales
+
    
     public static void executeSQL(String sql) throws SQLException {
         Connection conn = getTestConnection();
@@ -198,9 +187,7 @@ public class TestDatabaseConfig {
         }
     }
     
-    
-     //Método de utilidad para verificar el estado de la BD
-    // Útil para debugging
+
      
     public static void printDatabaseStatus() throws SQLException {
         Connection conn = getTestConnection();

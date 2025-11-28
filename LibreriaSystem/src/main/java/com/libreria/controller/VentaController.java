@@ -21,7 +21,7 @@ public class VentaController extends BaseController<Venta> {
         this.productoController = new ProductoController();
     }
     
-    // ✅ Constructor con parámetros (para testing con mocks)
+    // Constructor con parámetros (para testing con mocks)
     public VentaController(VentaDAO ventaDAO, ProductoController productoController) {
         this.ventaDAO = ventaDAO;
         this.productoController = productoController;

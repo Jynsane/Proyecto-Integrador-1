@@ -9,13 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 
-/**
- * VentaDAO - Compatible con MySQL (producción) y H2 (tests)
- * 
- * CAMBIO CLAVE: No cierra conexiones en modo test
- * 
- * Ubicación: src/main/java/com/libreria/dao/VentaDAO.java
- */
+
 public class VentaDAO implements CrudDAO<Venta> {
     private final DetalleVentaDAO detalleVentaDAO;
     private final ProductoDAO productoDAO;
@@ -142,9 +136,7 @@ public class VentaDAO implements CrudDAO<Venta> {
         throw new UnsupportedOperationException("No se permite eliminar ventas");
     }
     
-    /**
-     * Obtiene ventas por rango de fechas
-     */
+
     public List<Venta> obtenerPorFecha(LocalDateTime inicio, LocalDateTime fin) throws SQLException {
         List<Venta> ventas = new ArrayList<>();
         String sql = "SELECT * FROM ventas WHERE fecha BETWEEN ? AND ? ORDER BY fecha DESC";
@@ -173,10 +165,7 @@ public class VentaDAO implements CrudDAO<Venta> {
         }
     }
 
-    /**
-     * Genera un número de venta único para el día actual
-     * Formato: VYYYYMMDD-####
-     */
+
     public synchronized String generarNumeroVenta() throws SQLException {
         LocalDateTime ahora = LocalDateTime.now();
         String fecha = ahora.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -212,9 +201,7 @@ public class VentaDAO implements CrudDAO<Venta> {
         }
     }
     
-    /**
-     * Carga los detalles de una venta con productos completos
-     */
+
     private void cargarDetallesConProductos(Venta venta) throws SQLException {
         List<DetalleVenta> detalles = detalleVentaDAO.obtenerPorVenta(venta.getId());
         

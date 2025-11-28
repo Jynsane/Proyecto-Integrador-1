@@ -1,12 +1,6 @@
--- =============================================
+
 -- SCHEMA H2 PARA TESTING
 -- Sistema de Librería
--- 
--- Ubicación: test/resources/h2-schema.sql
--- 
--- NOTA: Este archivo es OPCIONAL y solo para referencia
--- El schema se crea automáticamente en TestDatabaseConfig.java
--- =============================================
 
 -- Tabla de Productos
 CREATE TABLE IF NOT EXISTS productos (
@@ -59,9 +53,6 @@ CREATE INDEX IF NOT EXISTS idx_ventas_numero ON ventas(numero_venta);
 CREATE INDEX IF NOT EXISTS idx_detalles_venta_id ON detalles_venta(venta_id);
 CREATE INDEX IF NOT EXISTS idx_detalles_producto_id ON detalles_venta(producto_id);
 
--- =============================================
--- DATOS DE PRUEBA
--- =============================================
 
 -- Productos de prueba
 INSERT INTO productos (codigo, nombre, categoria, precio, stock, descripcion) VALUES

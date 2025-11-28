@@ -11,13 +11,7 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Pruebas de Integración para el flujo completo de ventas
- * USA H2 DATABASE - No requiere MySQL
- * * IMPORTANTE: Esta clase extiende BaseIntegrationTest, que automáticamente:
- * - Crea la BD H2 en memoria antes de los tests
- * - Limpia los datos después de cada test
- * - Destruye la BD al finalizar todos los tests*/
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class VentaIntegrationTest extends BaseIntegrationTest {

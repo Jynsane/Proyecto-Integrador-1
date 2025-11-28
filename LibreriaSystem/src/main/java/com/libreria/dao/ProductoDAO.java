@@ -7,13 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ProductoDAO - Compatible con MySQL (producción) y H2 (tests)
- * 
- * CAMBIO CLAVE: No cierra conexiones en modo test
- * 
- * Ubicación: src/main/java/com/libreria/dao/ProductoDAO.java
- */
+
 public class ProductoDAO implements CrudDAO<Producto> {
     
     @Override
@@ -142,9 +136,7 @@ public class ProductoDAO implements CrudDAO<Producto> {
         }
     }
     
-    /**
-     * Mapea un ResultSet a un objeto Producto
-     */
+ 
     public Producto mapearProducto(ResultSet rs) throws SQLException {
         Producto producto = new Producto();
         producto.setId(rs.getInt("id"));
