@@ -5,20 +5,15 @@ import com.libreria.dao.ProductoDAO;
 
 import java.util.List;
 
-/**
- * ProductoController - Gestiona la lógica de negocio de productos
- * Compatible con testing mediante inyección de dependencias
- */
 public class ProductoController extends BaseController<Producto> {
     private final ProductoDAO productoDAO;
     
-    // ✅ Constructor SIN parámetros (para uso normal en la interfaz gráfica)
-    // Tu aplicación usa ESTE constructor - no se toca nada
+
     public ProductoController() {
         this.productoDAO = new ProductoDAO();
     }
     
-    // ✅ Constructor CON parámetros (NUEVO - solo para testing con mocks)
+    // Constructor CON parámetros (NUEVO - solo para testing con mocks)
     // Los tests usan ESTE constructor para inyectar mocks
     public ProductoController(ProductoDAO productoDAO) {
         this.productoDAO = productoDAO;
@@ -84,9 +79,7 @@ public class ProductoController extends BaseController<Producto> {
         actualizar(producto);
     }
     
-    /**
-     * Valida los datos del producto
-     */
+   
     private void validarProducto(Producto producto) throws Exception {
         if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
             throw new Exception("El nombre del producto es requerido");
@@ -101,19 +94,13 @@ public class ProductoController extends BaseController<Producto> {
             throw new Exception("El stock no puede ser negativo");
         }
     }
-    
-    /**
-     * Busca productos por categoría
-     */
+
     public List<Producto> buscarPorCategoria(String categoria) throws Exception {
         return productoDAO.obtenerTodos().stream()
                 .filter(p -> p.getCategoria().equalsIgnoreCase(categoria))
                 .toList();
     }
-    
-    /**
-     * Verifica si hay stock disponible
-     */
+
     public boolean verificarStockDisponible(int productoId, int cantidad) throws Exception {
         Producto producto = obtenerPorId(productoId);
         return producto != null && producto.getStock() >= cantidad;
