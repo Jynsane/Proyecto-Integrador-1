@@ -9,6 +9,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DetalleVentaDAO - Compatible con MySQL (producción) y H2 (tests)
+ * 
+ * Ubicación: src/main/java/com/libreria/dao/DetalleVentaDAO.java
+ */
 public class DetalleVentaDAO implements CrudDAO<DetalleVenta> {
     private final ProductoDAO productoDAO;
     
@@ -18,15 +23,18 @@ public class DetalleVentaDAO implements CrudDAO<DetalleVenta> {
     
     @Override
     public void crear(DetalleVenta detalle) throws SQLException {
-        // Delegar a la sobrecarga que crea su propia conexión
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            crear(detalle, conn);
+        Connection conn = DatabaseConnection.getConnection();
+        crear(detalle, conn);
+        
+        // Solo cerrar si NO estamos en modo test
+        if (!DatabaseConnection.isTestMode() && conn != null) {
+            conn.close();
         }
     }
 
     /**
-     * Inserta un detalle de venta usando la conexión proporcionada. No cierra la conexión.
-     * Esta variante permite que VentaDAO comparta la misma conexión/transaction.
+     * Inserta un detalle de venta usando la conexión proporcionada.
+     * NO cierra la conexión (útil para transacciones).
      */
     public void crear(DetalleVenta detalle, Connection conn) throws SQLException {
         String sql = "INSERT INTO detalles_venta (venta_id, producto_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
@@ -51,18 +59,25 @@ public class DetalleVentaDAO implements CrudDAO<DetalleVenta> {
     public DetalleVenta obtenerPorId(int id) throws SQLException {
         String sql = "SELECT * FROM detalles_venta WHERE id = ?";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, id);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapearDetalleVenta(rs);
+        Connection conn = DatabaseConnection.getConnection();
+        boolean shouldCloseConnection = !DatabaseConnection.isTestMode();
+        
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return mapearDetalleVenta(rs);
+                    }
                 }
             }
+            return null;
+        } finally {
+            if (shouldCloseConnection && conn != null) {
+                conn.close();
+            }
         }
-        return null;
     }
     
     @Override
@@ -70,15 +85,23 @@ public class DetalleVentaDAO implements CrudDAO<DetalleVenta> {
         List<DetalleVenta> detalles = new ArrayList<>();
         String sql = "SELECT * FROM detalles_venta";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                detalles.add(mapearDetalleVenta(rs));
+        Connection conn = DatabaseConnection.getConnection();
+        boolean shouldCloseConnection = !DatabaseConnection.isTestMode();
+        
+        try {
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                
+                while (rs.next()) {
+                    detalles.add(mapearDetalleVenta(rs));
+                }
+            }
+            return detalles;
+        } finally {
+            if (shouldCloseConnection && conn != null) {
+                conn.close();
             }
         }
-        return detalles;
     }
     
     @Override
@@ -91,24 +114,37 @@ public class DetalleVentaDAO implements CrudDAO<DetalleVenta> {
         throw new UnsupportedOperationException("No se permite eliminar detalles de venta");
     }
     
+    /**
+     * Obtiene todos los detalles de una venta específica
+     */
     public List<DetalleVenta> obtenerPorVenta(int ventaId) throws SQLException {
         List<DetalleVenta> detalles = new ArrayList<>();
         String sql = "SELECT * FROM detalles_venta WHERE venta_id = ?";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, ventaId);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    detalles.add(mapearDetalleVenta(rs));
+        Connection conn = DatabaseConnection.getConnection();
+        boolean shouldCloseConnection = !DatabaseConnection.isTestMode();
+        
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, ventaId);
+                
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        detalles.add(mapearDetalleVenta(rs));
+                    }
                 }
             }
+            return detalles;
+        } finally {
+            if (shouldCloseConnection && conn != null) {
+                conn.close();
+            }
         }
-        return detalles;
     }
     
+    /**
+     * Mapea un ResultSet a un objeto DetalleVenta
+     */
     private DetalleVenta mapearDetalleVenta(ResultSet rs) throws SQLException {
         DetalleVenta detalle = new DetalleVenta();
         detalle.setId(rs.getInt("id"));
@@ -117,7 +153,7 @@ public class DetalleVentaDAO implements CrudDAO<DetalleVenta> {
         Producto producto = productoDAO.obtenerPorId(rs.getInt("producto_id"));
         detalle.setProducto(producto);
         
-        // Crear objeto Venta con solo el ID
+        // Crear objeto Venta con solo el ID (para evitar recursión infinita)
         Venta venta = new Venta();
         venta.setId(rs.getInt("venta_id"));
         detalle.setVenta(venta);

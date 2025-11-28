@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.libreria.controller.ProductoControllerTest
+-------------------------------------------------------------------------------
+Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.106 s -- in com.libreria.controller.ProductoControllerTest

@@ -5,20 +5,35 @@ import com.libreria.dao.ProductoDAO;
 
 import java.util.List;
 
+/**
+ * ProductoController - Gestiona la lógica de negocio de productos
+ * Compatible con testing mediante inyección de dependencias
+ */
 public class ProductoController extends BaseController<Producto> {
     private final ProductoDAO productoDAO;
     
+    // ✅ Constructor SIN parámetros (para uso normal en la interfaz gráfica)
+    // Tu aplicación usa ESTE constructor - no se toca nada
     public ProductoController() {
         this.productoDAO = new ProductoDAO();
+    }
+    
+    // ✅ Constructor CON parámetros (NUEVO - solo para testing con mocks)
+    // Los tests usan ESTE constructor para inyectar mocks
+    public ProductoController(ProductoDAO productoDAO) {
+        this.productoDAO = productoDAO;
     }
     
     @Override
     public void crear(Producto producto) throws Exception {
         validarDatos(producto);
         validarProducto(producto);
+        
         // Si no se suministra código, lo generamos después de insertar (usamos ID generado)
         boolean codigoVacio = producto.getCodigo() == null || producto.getCodigo().trim().isEmpty();
+        
         productoDAO.crear(producto);
+        
         if (codigoVacio) {
             // Generar código basado en ID (P000001)
             String codigoGenerado = String.format("P%06d", producto.getId());
@@ -49,6 +64,11 @@ public class ProductoController extends BaseController<Producto> {
         return productoDAO.obtenerTodos();
     }
     
+    /**
+     * Actualiza el stock de un producto
+     * @param productoId ID del producto
+     * @param cantidad Cantidad a sumar/restar (negativo para reducir)
+     */
     public void actualizarStock(int productoId, int cantidad) throws Exception {
         Producto producto = obtenerPorId(productoId);
         if (producto == null) {
@@ -64,6 +84,9 @@ public class ProductoController extends BaseController<Producto> {
         actualizar(producto);
     }
     
+    /**
+     * Valida los datos del producto
+     */
     private void validarProducto(Producto producto) throws Exception {
         if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
             throw new Exception("El nombre del producto es requerido");
@@ -79,12 +102,18 @@ public class ProductoController extends BaseController<Producto> {
         }
     }
     
+    /**
+     * Busca productos por categoría
+     */
     public List<Producto> buscarPorCategoria(String categoria) throws Exception {
         return productoDAO.obtenerTodos().stream()
                 .filter(p -> p.getCategoria().equalsIgnoreCase(categoria))
                 .toList();
     }
     
+    /**
+     * Verifica si hay stock disponible
+     */
     public boolean verificarStockDisponible(int productoId, int cantidad) throws Exception {
         Producto producto = obtenerPorId(productoId);
         return producto != null && producto.getStock() >= cantidad;

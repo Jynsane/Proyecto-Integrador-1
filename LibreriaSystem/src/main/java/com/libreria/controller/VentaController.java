@@ -12,12 +12,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class VentaController extends BaseController<Venta> {
-    private final ProductoController productoController;
     private final VentaDAO ventaDAO;
+    private final ProductoController productoController;
     
+    // Constructor sin parámetros (para uso normal)
     public VentaController() {
-        this.productoController = new ProductoController();
         this.ventaDAO = new VentaDAO();
+        this.productoController = new ProductoController();
+    }
+    
+    // ✅ Constructor con parámetros (para testing con mocks)
+    public VentaController(VentaDAO ventaDAO, ProductoController productoController) {
+        this.ventaDAO = ventaDAO;
+        this.productoController = productoController;
     }
 
     @Override

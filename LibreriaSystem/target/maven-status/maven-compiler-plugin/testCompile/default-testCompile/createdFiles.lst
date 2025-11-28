@@ -1,0 +1,6 @@
+com\libreria\controller\VentaControllerTest.class
+com\libreria\integration\BaseIntegrationTest.class
+com\libreria\controller\ProductoControllerTest.class
+com\libreria\dao\ProductoDAOTest.class
+com\libreria\integration\VentaIntegrationTest.class
+com\libreria\config\TestDatabaseConfig.class
